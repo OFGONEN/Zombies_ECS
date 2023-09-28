@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Transforms;
 
 namespace TMG.Zombies
 {
@@ -30,7 +31,12 @@ namespace TMG.Zombies
             var entityCommanBuffer = new EntityCommandBuffer(Allocator.Temp);
 
             for (int i = 0; i < graveyard.NumberTombstonesToSpawn; i++)
-                entityCommanBuffer.Instantiate(graveyard.TombstonePrefab);
+            {
+                var newTombstone = entityCommanBuffer.Instantiate(graveyard.TombstonePrefab);
+                var newTombstoneTransform = graveyard.GetRandomTombstoneTransform;
+                
+                entityCommanBuffer.SetComponent(newTombstone, new LocalToWorldTransform{Value = newTombstoneTransform});
+            }
             
             entityCommanBuffer.Playback(state.EntityManager);
         }
