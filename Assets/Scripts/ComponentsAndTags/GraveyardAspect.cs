@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -11,10 +12,16 @@ namespace TMG.Zombies
         private readonly TransformAspect _transformAspect;
         private readonly RefRO<GraveyardProperties> _graveyardProperties;
         private readonly RefRW<GraveyardRandom> _graveyardRandom;
+        private readonly RefRW<ZombieSpawnPoints> _zombieSpawnPoints;
 
         public int NumberTombstonesToSpawn => _graveyardProperties.ValueRO.NumberTombstonesToSpawn;
         public Entity TombstonePrefab => _graveyardProperties.ValueRO.TombstonePrefab;
 
+        public NativeArray<float3> ZombieSPawnPoints
+        {
+            get => _zombieSpawnPoints.ValueRO.Value;
+            set => _zombieSpawnPoints.ValueRW.Value = value;
+        }
         public UniformScaleTransform GetRandomTombstoneTransform => new UniformScaleTransform
         {
             Position = GetRandomPosition(),

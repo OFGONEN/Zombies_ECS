@@ -29,6 +29,8 @@ namespace TMG.Zombies
                 {
                     Value = Random.CreateFromIndex(authoring.RandomSeed)
                 });
+                
+                AddComponent<ZombieSpawnPoints>();
             }
         }
     }   
