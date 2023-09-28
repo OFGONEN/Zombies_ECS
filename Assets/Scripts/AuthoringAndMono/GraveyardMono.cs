@@ -13,6 +13,8 @@ namespace TMG.Zombies
         public int NumberTombstonesToSpawn;
         public GameObject TombstonePrefab;
         public uint RandomSeed;
+        public GameObject ZombiePrefab;
+        public float ZombieSpawnRate;
         
         public class GraveyardBaker : Baker<GraveyardMono>
         {
@@ -22,7 +24,9 @@ namespace TMG.Zombies
                 {
                     FieldDimensions = authoring.FieldDimensions,
                     NumberTombstonesToSpawn = authoring.NumberTombstonesToSpawn,
-                    TombstonePrefab = GetEntity(authoring.TombstonePrefab)
+                    TombstonePrefab = GetEntity(authoring.TombstonePrefab),
+                    ZombiePrefab = GetEntity(authoring.ZombiePrefab),
+                    ZombieSpawnRate = authoring.ZombieSpawnRate
                 });
                 
                 AddComponent(new GraveyardRandom
@@ -31,6 +35,7 @@ namespace TMG.Zombies
                 });
                 
                 AddComponent<ZombieSpawnPoints>();
+                AddComponent<ZombieSpawnTimer>();
             }
         }
     }   

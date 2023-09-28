@@ -13,6 +13,7 @@ namespace TMG.Zombies
         private readonly RefRO<GraveyardProperties> _graveyardProperties;
         private readonly RefRW<GraveyardRandom> _graveyardRandom;
         private readonly RefRW<ZombieSpawnPoints> _zombieSpawnPoints;
+        private readonly RefRW<ZombieSpawnTimer> _zombieSpawnTimer;
 
         public int NumberTombstonesToSpawn => _graveyardProperties.ValueRO.NumberTombstonesToSpawn;
         public Entity TombstonePrefab => _graveyardProperties.ValueRO.TombstonePrefab;
@@ -29,7 +30,6 @@ namespace TMG.Zombies
             Scale = GetRandomScale(0.5f)
         };
 
-        // private float3 GetRandomPosition() => _graveyardRandom.ValueRW.Value.NextFloat3(MinCorner, MaxCorner);
         private float3 GetRandomPosition()
         {
             float3 randomPosition;
@@ -54,5 +54,15 @@ namespace TMG.Zombies
         private quaternion GetRandomRotation =>
             quaternion.RotateY(_graveyardRandom.ValueRW.Value.NextFloat(-0.25f, 0.25f));
         private float GetRandomScale(float min) => _graveyardRandom.ValueRW.Value.NextFloat(min, 1f);
+
+        public float ZombieSpawnTimer
+        {
+            get => _zombieSpawnTimer.ValueRO.Value;
+            set => _zombieSpawnTimer.ValueRW.Value = value;
+        }
+
+        public bool TimeToSpawnZombie => ZombieSpawnTimer <= 0f;
+        public float ZombineSpawnRate => _graveyardProperties.ValueRO.ZombieSpawnRate;
+        public Entity ZombiePrefab => _graveyardProperties.ValueRO.ZombiePrefab;
     }    
 }
