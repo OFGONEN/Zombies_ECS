@@ -34,7 +34,6 @@ namespace TMG.Zombies
             {
                 var newTombstone = entityCommanBuffer.Instantiate(graveyard.TombstonePrefab);
                 var newTombstoneTransform = graveyard.GetRandomTombstoneTransform;
-                
                 entityCommanBuffer.SetComponent(newTombstone, new LocalToWorldTransform{Value = newTombstoneTransform});
             }
             

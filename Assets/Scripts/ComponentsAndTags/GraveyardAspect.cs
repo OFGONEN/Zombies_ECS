@@ -17,12 +17,22 @@ namespace TMG.Zombies
 
         public UniformScaleTransform GetRandomTombstoneTransform => new UniformScaleTransform
         {
-            Position = GetRandomPosition,
-            Rotation = quaternion.identity,
-            Scale = 1f
+            Position = GetRandomPosition(),
+            Rotation = GetRandomRotation,
+            Scale = GetRandomScale(0.5f)
         };
 
-        private float3 GetRandomPosition => _graveyardRandom.ValueRW.Value.NextFloat3(MinCorner, MaxCorner);
+        // private float3 GetRandomPosition() => _graveyardRandom.ValueRW.Value.NextFloat3(MinCorner, MaxCorner);
+        private float3 GetRandomPosition()
+        {
+            float3 randomPosition;
+            do
+            {
+                randomPosition = _graveyardRandom.ValueRW.Value.NextFloat3(MinCorner, MaxCorner);
+            } while (math.distancesq(_transformAspect.Position, randomPosition) < BRAIN_SAFETY_RADIUS_SQ);
+
+            return randomPosition;
+        }
         
         private float3 MinCorner => _transformAspect.Position - HalfDimensions;
         private float3 MaxCorner => _transformAspect.Position + HalfDimensions;
@@ -32,5 +42,10 @@ namespace TMG.Zombies
             y = 0f,
             z = _graveyardProperties.ValueRO.FieldDimensions.y * 0.5f
         };
+        private const float BRAIN_SAFETY_RADIUS_SQ = 100;
+
+        private quaternion GetRandomRotation =>
+            quaternion.RotateY(_graveyardRandom.ValueRW.Value.NextFloat(-0.25f, 0.25f));
+        private float GetRandomScale(float min) => _graveyardRandom.ValueRW.Value.NextFloat(min, 1f);
     }    
 }
