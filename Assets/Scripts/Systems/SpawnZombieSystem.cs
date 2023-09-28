@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Transforms;
 
 namespace TMG.Zombies
 {
@@ -42,9 +43,13 @@ namespace TMG.Zombies
         {
             graveyard.ZombieSpawnTimer -= DeltaTime;
             if(!graveyard.TimeToSpawnZombie) return;
+            if (graveyard.ZombieSPawnPoints.Length == 0) return;
             
             graveyard.ZombieSpawnTimer = graveyard.ZombineSpawnRate;
             var newZombie = ECB.Instantiate(graveyard.ZombiePrefab);
+
+            var newZombieTransform = graveyard.GetZombieSpawnPoint();
+            ECB.SetComponent(newZombie, new LocalToWorldTransform{Value = newZombieTransform});
         }
     }
 }

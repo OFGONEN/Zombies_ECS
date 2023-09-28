@@ -64,5 +64,18 @@ namespace TMG.Zombies
         public bool TimeToSpawnZombie => ZombieSpawnTimer <= 0f;
         public float ZombineSpawnRate => _graveyardProperties.ValueRO.ZombieSpawnRate;
         public Entity ZombiePrefab => _graveyardProperties.ValueRO.ZombiePrefab;
+
+        public UniformScaleTransform GetZombieSpawnPoint()
+        {
+            var position = GetRandomZombieSpawnPoint;
+            return new UniformScaleTransform()
+            {
+                Position = position,
+                Rotation = quaternion.RotateY(MathHelpers.GetHeading(position, _transformAspect.Position)),
+                Scale = 1f
+            };
+        }
+
+        private float3 GetRandomZombieSpawnPoint => ZombieSPawnPoints[_graveyardRandom.ValueRW.Value.NextInt(ZombieSPawnPoints.Length)];
     }    
 }
