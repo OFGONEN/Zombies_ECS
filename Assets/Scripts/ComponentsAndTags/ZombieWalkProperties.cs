@@ -2,7 +2,7 @@ using Unity.Entities;
 
 namespace TMG.Zombies 
 {
-    public struct ZombieWalkProperties : IComponentData
+    public struct ZombieWalkProperties : IComponentData, IEnableableComponent
     {
         public float WalkSpeed;
         public float WalkAmplitude;
@@ -18,4 +18,6 @@ namespace TMG.Zombies
     {
         public float Value;
     }
+
+    public struct NewZombieTag : IComponentData {}
 }

@@ -28,6 +28,7 @@ namespace TMG.Zombies
             
             AddComponent<ZombieTimer>();
             AddComponent<ZombieHeading>();
+            AddComponent<NewZombieTag>();
         }
     }
 }
