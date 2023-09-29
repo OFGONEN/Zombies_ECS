@@ -36,6 +36,11 @@ namespace TMG.Zombies
             ecb.AppendToBuffer(sortKey, brainEntity, curBrainDamage);
             
         }
+
+        public bool IsInEatingRange(float3 brainPosition, float brainRadiusSq)
+        {
+            return math.distancesq(brainPosition, _transform.Position) <= brainRadiusSq - 1;
+        }
     }
     
 }

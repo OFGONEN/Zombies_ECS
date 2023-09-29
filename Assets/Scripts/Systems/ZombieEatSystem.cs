@@ -1,5 +1,7 @@
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 
 namespace TMG.Zombies
@@ -23,12 +25,15 @@ namespace TMG.Zombies
             var deltaTime = SystemAPI.Time.DeltaTime;
             var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
             var brainEntity = SystemAPI.GetSingletonEntity<BrainTag>();
+            var brainScale = SystemAPI.GetComponent<LocalToWorldTransform>(brainEntity).Value.Scale;
+            var brainRadius = brainScale * 5f + 1f;
 
             new ZombieEatJob
             {
                 DeltaTime = deltaTime,
                 ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter(),
-                BrainEntity = brainEntity
+                BrainEntity = brainEntity,
+                BrainRadiusSq = brainRadius * brainRadius
             }.ScheduleParallel();
         }
     }    
@@ -39,11 +44,20 @@ namespace TMG.Zombies
         public float DeltaTime;
         public EntityCommandBuffer.ParallelWriter ECB;
         public Entity BrainEntity;
+        public float BrainRadiusSq;
 
         [BurstCompile]
         private void Execute(ZombieEatAspect zombie, [EntityInQueryIndex]int sortKey)
         {
-            zombie.Eat(DeltaTime, ECB, sortKey, BrainEntity);
+            if (zombie.IsInEatingRange(float3.zero, BrainRadiusSq))
+            {
+                zombie.Eat(DeltaTime, ECB, sortKey, BrainEntity);
+            }
+            else
+            {
+                ECB.SetComponentEnabled<ZombieEatProperties>(sortKey, zombie.Entity, false);
+                ECB.SetComponentEnabled<ZombieWalkProperties>(sortKey, zombie.Entity, true);
+            }
         }
     }
 }
