@@ -9,6 +9,13 @@ namespace TMG.Zombies
         public float WalkFrequency;
     }
 
+    public struct ZombieEatProperties : IComponentData, IEnableableComponent
+    {
+        public float EatDamagePerSecond;
+        public float EatAmplitude;
+        public float EatFrequency;
+    }
+
     public struct ZombieTimer : IComponentData
     {
         public float Value;
