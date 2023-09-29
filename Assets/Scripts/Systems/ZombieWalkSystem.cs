@@ -1,5 +1,7 @@
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine.Rendering;
 
 namespace TMG.Zombies
@@ -22,10 +24,17 @@ namespace TMG.Zombies
         public void OnUpdate(ref SystemState state)
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
+            var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+            var brainEntity = SystemAPI.GetSingletonEntity<BrainTag>();
+            var brainScale = SystemAPI.GetComponent<LocalToWorldTransform>(brainEntity).Value.Scale;
+            var brainRadius = brainScale * 5f + 0.5f;
 
             new ZombieWalkJob
             {
-                DeltaTime = deltaTime
+                DeltaTime = deltaTime,
+                BrainRadiusSq = brainRadius * brainRadius,
+                ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter()
+                
             }.ScheduleParallel();
         }
     }
@@ -34,12 +43,15 @@ namespace TMG.Zombies
     public partial struct ZombieWalkJob : IJobEntity
     {
         public float DeltaTime;
+        public float BrainRadiusSq;
+        public EntityCommandBuffer.ParallelWriter ECB;
         
         [BurstCompile]
-        public void Execute(ZombieWalkAspect zombie)
+        public void Execute(ZombieWalkAspect zombie, [EntityInQueryIndex]int sortKey)
         {
             zombie.Walk(DeltaTime);
+            if (zombie.IsInStoppingRange(float3.zero, BrainRadiusSq))
+                ECB.SetComponentEnabled<ZombieWalkProperties>(sortKey, zombie.Entity, false);
         }
     }
-    
 }

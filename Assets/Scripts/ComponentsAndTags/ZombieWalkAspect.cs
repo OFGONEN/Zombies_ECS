@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -32,5 +33,8 @@ namespace TMG.Zombies
             var swayAngle = WalkAmplitude * math.sin(WalkFrequency * WalkTimer);
             _transformAspect.Rotation = quaternion.Euler(0, WalkHeading, swayAngle);
         }
+
+        public bool IsInStoppingRange(float3 brainPosition, float brainRadiusSq) =>
+            math.distancesq(brainPosition, _transformAspect.Position) <= brainRadiusSq;
     }   
 }
