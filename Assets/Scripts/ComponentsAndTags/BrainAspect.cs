@@ -18,6 +18,11 @@ namespace TMG.Zombies
             }
             
             _brainDamageBuffer.Clear();
+
+            var ltf = _transformAspect.LocalToWorld;
+            ltf.Scale = _brainHealth.ValueRO.Value / _brainHealth.ValueRO.Max;
+            _transformAspect.LocalToWorld = ltf;
+
         }
     }
 }
