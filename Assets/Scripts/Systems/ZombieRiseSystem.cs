@@ -47,8 +47,8 @@ namespace TMG.Zombies
             {
                 zombie.SetAtGroundLevel();
                 ECB.RemoveComponent<ZombieRiseRate>(sortKey, zombie.Entity);
+                ECB.SetComponentEnabled<ZombieWalkProperties>(sortKey, zombie.Entity, true);
             }
-                
         }
     } 
 }
