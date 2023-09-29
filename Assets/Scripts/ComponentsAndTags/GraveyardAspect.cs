@@ -77,5 +77,7 @@ namespace TMG.Zombies
         }
 
         private float3 GetRandomZombieSpawnPoint => ZombieSPawnPoints[_graveyardRandom.ValueRW.Value.NextInt(ZombieSPawnPoints.Length)];
+
+        public float3 Position => _transformAspect.Position;
     }    
 }

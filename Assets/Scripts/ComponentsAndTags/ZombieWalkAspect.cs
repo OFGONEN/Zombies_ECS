@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 
 namespace TMG.Zombies
@@ -27,6 +28,9 @@ namespace TMG.Zombies
         {
             WalkTimer += deltaTIme;
             _transformAspect.Position += _transformAspect.Forward * WalkSpeed * deltaTIme;
+
+            var swayAngle = WalkAmplitude * math.sin(WalkFrequency * WalkTimer);
+            _transformAspect.Rotation = quaternion.Euler(0, WalkHeading, swayAngle);
         }
     }   
 }
