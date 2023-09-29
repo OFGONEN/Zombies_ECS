@@ -21,10 +21,14 @@ namespace TMG.Zombies
         public void OnUpdate(ref SystemState state)
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
+            var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+            var brainEntity = SystemAPI.GetSingletonEntity<BrainTag>();
 
             new ZombieEatJob
             {
-                DeltaTime = deltaTime
+                DeltaTime = deltaTime,
+                ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter(),
+                BrainEntity = brainEntity
             }.ScheduleParallel();
         }
     }    
@@ -33,11 +37,13 @@ namespace TMG.Zombies
     public partial struct ZombieEatJob : IJobEntity
     {
         public float DeltaTime;
+        public EntityCommandBuffer.ParallelWriter ECB;
+        public Entity BrainEntity;
 
         [BurstCompile]
-        private void Execute(ZombieEatAspect zombie)
+        private void Execute(ZombieEatAspect zombie, [EntityInQueryIndex]int sortKey)
         {
-            zombie.Eat(DeltaTime);
+            zombie.Eat(DeltaTime, ECB, sortKey, BrainEntity);
         }
     }
 }
