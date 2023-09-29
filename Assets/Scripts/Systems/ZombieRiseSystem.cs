@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.Burst;
 using Unity.Entities;
 
@@ -21,10 +22,12 @@ namespace TMG.Zombies
         public void OnUpdate(ref SystemState state)
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
+            var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
 
             new ZombieRiseJob
             {
-                DeltaTime = deltaTime
+                DeltaTime = deltaTime,
+                ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter()
             }.ScheduleParallel();
         }
     }
@@ -33,11 +36,19 @@ namespace TMG.Zombies
     public partial struct ZombieRiseJob : IJobEntity
     {
         public float DeltaTime;
+        public EntityCommandBuffer.ParallelWriter ECB;
         
         [BurstCompile]
-        private void Execute(ZombieRiseAspect zombie)
+        private void Execute(ZombieRiseAspect zombie, [EntityInQueryIndex]int sortKey)
         {
             zombie.Rise(DeltaTime);
+
+            if (zombie.IsAboveGround)
+            {
+                zombie.SetAtGroundLevel();
+                ECB.RemoveComponent<ZombieRiseRate>(sortKey, zombie.Entity);
+            }
+                
         }
     } 
 }
