@@ -18,6 +18,8 @@ namespace TMG.Zombies
                 Value = authoring.BrainHealth,
                 Max = authoring.BrainHealth
             });
+
+            AddBuffer<BrainDamageBufferElement>();
         }
     }
 }
